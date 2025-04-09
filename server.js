@@ -2,6 +2,7 @@
 const express = require('express');
 const cors = require('cors');
 const { MongoClient } = require('mongodb');
+const ObjectId = require('mongodb').ObjectId;
 const app = express();
 
 // Enable middleware: CORS and JSON parsing for all incoming requests
@@ -75,6 +76,27 @@ app.post('/order', async (req, res) => {
     res.json({ message: 'Order placed successfully!' });
   } catch (err) {
     res.status(500).json({ error: 'Order failed' });
+  }
+});
+
+// PUT /lessons/:id - Update a lesson's attributes by its ID
+app.put('/lessons/:id', async (req, res) => {
+  try {
+    const lessonId = new ObjectId(req.params.id);
+    const updateData = req.body;
+    const result = await lessonsCollection.updateOne(
+      { _id: lessonId },
+      { $set: updateData }
+    );
+    console.log("PUT result for", lessonId, ":", result);
+    if (result.matchedCount === 1) {
+      res.json({ msg: 'success' });
+    } else {
+      res.json({ msg: 'error' });
+    }
+  } catch (err) {
+    console.error("Error during PUT /lessons/:id:", err);
+    res.status(500).json({ error: 'Update failed: ' + err.message });
   }
 });
 
