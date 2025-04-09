@@ -65,6 +65,18 @@ app.get('/search', async (req, res) => {
   }
 });
 
+// POST /order - Insert a new order into the orders collection
+app.post('/order', async (req, res) => {
+  try {
+    // Retrieve order details from the request body
+    const order = req.body;
+    // Insert the order into the orders collection
+    await ordersCollection.insertOne(order);
+    res.json({ message: 'Order placed successfully!' });
+  } catch (err) {
+    res.status(500).json({ error: 'Order failed' });
+  }
+});
 
 // Start the server on port 3000
 app.listen(3000, () => {
