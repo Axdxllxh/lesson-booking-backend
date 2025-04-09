@@ -100,6 +100,24 @@ app.put('/lessons/:id', async (req, res) => {
   }
 });
 
+// DELETE /lessons/:id - Delete a lesson using its ObjectId
+app.delete('/lessons/:id', async (req, res) => {
+  try {
+    // Convert the provided id parameter to a MongoDB ObjectId
+    const lessonId = new ObjectId(req.params.id);
+    // Delete the lesson document with the matching _id
+    const result = await lessonsCollection.deleteOne({ _id: lessonId });
+    // Respond with success if a document was deleted, error otherwise
+    if (result.deletedCount === 1) {
+      res.json({ msg: 'success' });
+    } else {
+      res.json({ msg: 'error' });
+    }
+  } catch (err) {
+    res.status(500).json({ error: 'Deletion failed' });
+  }
+});
+
 // Start the server on port 3000
 app.listen(3000, () => {
   console.log('Server running on http://localhost:3000');
