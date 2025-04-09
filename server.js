@@ -124,7 +124,10 @@ app.use((err, req, res, next) => {
   res.status(500).send('Something broke!');
 });
 
-// Start the server on port 3000
-app.listen(3000, () => {
-  console.log('Server running on http://localhost:3000');
+// Use dynamic port assigned by Render or fallback to 3000 for local development
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });
+
+
