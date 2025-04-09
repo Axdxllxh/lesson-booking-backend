@@ -8,6 +8,15 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// Logger middleware: Logs method, URL, and timestamp for every request
+app.use((req, res, next) => {
+  console.log(`${new Date().toISOString()} ${req.method} ${req.url}`);
+  next();
+});
+
+// (Optional) Serve static files from 'public' folder – e.g., if you later wish to serve images from here
+app.use('/public', express.static('public'));
+
 // MongoDB Connection String 
 const MONGO_URI = "mongodb+srv://Cheneywed:Cheneywed123@cluster0.mwa9fk9.mongodb.net/lessons_booking";
 
@@ -82,6 +91,7 @@ app.put('/lessons/:id', async (req, res) => {
       { _id: lessonId },
       { $set: updateData }
     );
+    console.log("PUT result for", lessonId, ":", result);
     if (result.matchedCount === 1) {
       res.json({ msg: 'success' });
     } else {
@@ -108,12 +118,7 @@ app.delete('/lessons/:id', async (req, res) => {
   }
 });
 
-// Testing middleware - commented out after testing
-// app.get('/test-error', (req, res) => {
-//   throw new Error("Test error");
-// });
-
-// Global error handling middleware to catch and log any unhandled errors
+// Global error handling middleware
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).send('Something broke!');
