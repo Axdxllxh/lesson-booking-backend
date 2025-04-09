@@ -1,8 +1,7 @@
 // Import modules: Express, CORS, and MongoClient from the MongoDB driver
 const express = require('express');
 const cors = require('cors');
-const { MongoClient } = require('mongodb');
-const ObjectId = require('mongodb').ObjectId;
+const { MongoClient, ObjectId } = require('mongodb');
 const app = express();
 
 // Enable middleware: CORS and JSON parsing for all incoming requests
@@ -40,7 +39,6 @@ app.get('/', (req, res) => {
 // GET /lessons - Retrieve all lessons from the lessons collection
 app.get('/lessons', async (req, res) => {
   try {
-    // Convert the MongoDB cursor to an array of lessons
     const lessons = await lessonsCollection.find().toArray();
     res.json(lessons);
   } catch (err) {
@@ -51,9 +49,7 @@ app.get('/lessons', async (req, res) => {
 // GET /search - Search for lessons by subject or location using regex
 app.get('/search', async (req, res) => {
   try {
-    // Retrieve the search query from the URL; default to an empty string if none is provided
     const q = req.query.q?.toLowerCase() || '';
-    // Use a case-insensitive regular expression to search in subject and location fields
     const results = await lessonsCollection.find({
       $or: [
         { subject: { $regex: q, $options: 'i' } },
@@ -69,9 +65,7 @@ app.get('/search', async (req, res) => {
 // POST /order - Insert a new order into the orders collection
 app.post('/order', async (req, res) => {
   try {
-    // Retrieve order details from the request body
     const order = req.body;
-    // Insert the order into the orders collection
     await ordersCollection.insertOne(order);
     res.json({ message: 'Order placed successfully!' });
   } catch (err) {
@@ -88,7 +82,6 @@ app.put('/lessons/:id', async (req, res) => {
       { _id: lessonId },
       { $set: updateData }
     );
-    console.log("PUT result for", lessonId, ":", result);
     if (result.matchedCount === 1) {
       res.json({ msg: 'success' });
     } else {
@@ -103,11 +96,8 @@ app.put('/lessons/:id', async (req, res) => {
 // DELETE /lessons/:id - Delete a lesson using its ObjectId
 app.delete('/lessons/:id', async (req, res) => {
   try {
-    // Convert the provided id parameter to a MongoDB ObjectId
     const lessonId = new ObjectId(req.params.id);
-    // Delete the lesson document with the matching _id
     const result = await lessonsCollection.deleteOne({ _id: lessonId });
-    // Respond with success if a document was deleted, error otherwise
     if (result.deletedCount === 1) {
       res.json({ msg: 'success' });
     } else {
@@ -118,12 +108,10 @@ app.delete('/lessons/:id', async (req, res) => {
   }
 });
 
-// Testing middleware 
-
+// Testing middleware - commented out after testing
 // app.get('/test-error', (req, res) => {
 //   throw new Error("Test error");
 // });
-
 
 // Global error handling middleware to catch and log any unhandled errors
 app.use((err, req, res, next) => {
