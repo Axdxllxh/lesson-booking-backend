@@ -47,6 +47,25 @@ app.get('/lessons', async (req, res) => {
   }
 });
 
+// GET /search - Search for lessons by subject or location using regex
+app.get('/search', async (req, res) => {
+  try {
+    // Retrieve the search query from the URL; default to an empty string if none is provided
+    const q = req.query.q?.toLowerCase() || '';
+    // Use a case-insensitive regular expression to search in subject and location fields
+    const results = await lessonsCollection.find({
+      $or: [
+        { subject: { $regex: q, $options: 'i' } },
+        { location: { $regex: q, $options: 'i' } }
+      ]
+    }).toArray();
+    res.json(results);
+  } catch (err) {
+    res.status(500).json({ error: 'Search failed' });
+  }
+});
+
+
 // Start the server on port 3000
 app.listen(3000, () => {
   console.log('Server running on http://localhost:3000');
