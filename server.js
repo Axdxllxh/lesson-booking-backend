@@ -118,6 +118,19 @@ app.delete('/lessons/:id', async (req, res) => {
   }
 });
 
+// Testing middleware 
+
+// app.get('/test-error', (req, res) => {
+//   throw new Error("Test error");
+// });
+
+
+// Global error handling middleware to catch and log any unhandled errors
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).send('Something broke!');
+});
+
 // Start the server on port 3000
 app.listen(3000, () => {
   console.log('Server running on http://localhost:3000');
